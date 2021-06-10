@@ -1,0 +1,15 @@
+## 👋 Hi, I'm Andreas Holstenson
+
+I work with user-centered problem solving using technology. You'll find me in 
+Malmö, Sweden. 
+
+I enjoy building things and over the years I've pushed {{ COMMITS }}
+commits, opened {{ ISSUES }} issues and submitted {{ PULL_REQUESTS }} PRs in 
+{{ REPOSITORIES_CONTRIBUTED_TO }} repositories. There's currently 
+{{ REPOSITORIES }} repositories around here with {{ STARS }} stars.
+
+I'm currently open to new opportunities and spending some time on distributed
+systems and storage/search solutions.
+
+Want to get in touch? Send me an e-mail at [a@holstenson.se](mailto:a@holstenson.se) 
+or tweet me [@aholstenson](https://twitter.com/aholstenson).
