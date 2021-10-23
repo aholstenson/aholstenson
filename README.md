@@ -6,7 +6,7 @@ Malmö, Sweden.
 I enjoy building things and over the years on GitHub I've pushed 4627
 commits, opened 41 issues and submitted 13 PRs in 
 13 repositories. There's currently 
-22 repositories around here with 1759 stars.
+22 repositories around here with 1760 stars.
 
 I'm currently open to new opportunities and spending some time on distributed
 systems and storage/search solutions.
