@@ -8,9 +8,6 @@ commits, opened {{ ISSUES }} issues and submitted {{ PULL_REQUESTS }} PRs in
 {{ REPOSITORIES_CONTRIBUTED_TO }} repositories. There's currently 
 {{ REPOSITORIES }} repositories around here with {{ STARS }} stars.
 
-I'm currently open to new opportunities and spending some time on distributed
-systems and storage/search solutions.
-
 Want to get in touch? Send me an e-mail at [a@holstenson.se](mailto:a@holstenson.se),
 tweet me [@aholstenson](https://twitter.com/aholstenson) or connect with me on
 [LinkedIn](http://se.linkedin.com/in/aholstenson).
