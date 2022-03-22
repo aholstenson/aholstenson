@@ -3,7 +3,7 @@
 I work with user-centered problem solving using technology. You'll find me in 
 Malmö, Sweden. 
 
-I enjoy building things and over the years on GitHub I've pushed 4847
+I enjoy building things and over the years on GitHub I've pushed 4855
 commits, opened 42 issues and submitted 13 PRs in 
 10 repositories. There's currently 
 23 repositories around here with 1830 stars.
