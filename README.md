@@ -5,7 +5,7 @@ Malmö, Sweden.
 
 I enjoy building things and over the years on GitHub I've pushed 2946
 commits, opened 43 issues and submitted 14 PRs in 
-0 repositories. There's currently 
+1 repositories. There's currently 
 24 repositories around here with 1961 stars.
 
 Want to get in touch? Send me an e-mail at [a@holstenson.se](mailto:a@holstenson.se),
