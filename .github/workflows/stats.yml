@@ -52,6 +52,43 @@ jobs:
           query($u:String!){ user(login:$u){ pullRequests { totalCount } } }
         ' -F u="$USER" --jq '.data.user.pullRequests.totalCount')
 
+        # Public repos committed to in the last quarter (~90 days), incl. ones
+        # not owned by the user. Well within the contributions 1-year cap.
+        FROM=$(date -u -d '-90 days' +%Y-%m-%dT%H:%M:%SZ)
+        TO=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+        LINKS=$(gh api graphql -f query='
+          query($u:String!,$from:DateTime!,$to:DateTime!){
+            user(login:$u){
+              contributionsCollection(from:$from,to:$to){
+                commitContributionsByRepository(maxRepositories:100){
+                  contributions { totalCount }
+                  repository { nameWithOwner url isPrivate isFork }
+                }
+              }
+            }
+          }
+        ' -F u="$USER" -F from="$FROM" -F to="$TO" \
+          --jq '[ .data.user.contributionsCollection.commitContributionsByRepository[]
+                  | select(.repository.isPrivate == false and .repository.isFork == false)
+                  | { n: .repository.nameWithOwner, url: .repository.url,
+                      c: .contributions.totalCount } ]
+                | sort_by(-.c) | .[0:5] | .[]
+                | "[\(.n)](\(.url))"')
+
+        # Join the links into an Oxford-style list (the surrounding sentence
+        # lives in TEMPLATE.md). Empty when there was no recent activity.
+        RECENT_REPOS=""
+        if [ -n "$LINKS" ]; then
+          mapfile -t ARR <<< "$LINKS"
+          N=${#ARR[@]}
+          if [ "$N" -eq 1 ]; then
+            RECENT_REPOS="${ARR[0]}"
+          else
+            RECENT_REPOS=$(printf '%s, ' "${ARR[@]:0:N-1}")
+            RECENT_REPOS="${RECENT_REPOS%, } and ${ARR[N-1]}"
+          fi
+        fi
+
         # Repository count + total stars, paginated over owned non-fork public repos.
         REPOSITORIES=0
         STARS=0
@@ -86,6 +123,22 @@ jobs:
           -e "s/{{ REPOSITORIES }}/$REPOSITORIES/g" \
           -e "s/{{ STARS }}/$STARS/g" \
           README.md
+
+        # Substitute the {{ RECENT_REPOS }} token with the link list (literal
+        # replacement, so slashes/brackets in URLs are safe), or drop the whole
+        # sentence and its trailing blank line when there was no activity.
+        TOKEN="{{ RECENT_REPOS }}"
+        if [ -n "$RECENT_REPOS" ]; then
+          awk -v r="$RECENT_REPOS" -v t="$TOKEN" '
+            { i=index($0,t)
+              if(i) $0=substr($0,1,i-1) r substr($0,i+length(t))
+              print }' README.md > README.tmp
+        else
+          awk -v t="$TOKEN" '
+            index($0,t){ getline; next }
+            { print }' README.md > README.tmp
+        fi
+        mv README.tmp README.md
     - name: Update README.md
       run: |
         if [[ "$(git status --porcelain)" != "" ]]; then
