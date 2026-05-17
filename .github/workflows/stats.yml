@@ -72,6 +72,8 @@ jobs:
         ' -F u="$USER" -F from="$FROM" -F to="$TO" \
           --jq '[ .data.user.contributionsCollection.commitContributionsByRepository[]
                   | select(.repository.isPrivate == false and .repository.isFork == false)
+                  | (.repository.nameWithOwner | sub("^.*/";"")) as $name
+                  | select($name != "aholstenson" and $name != "holstenson.se")
                   | { n: .repository.nameWithOwner, url: .repository.url,
                       t: .contributions.nodes[0].occurredAt } ]
                 | sort_by(.t) | reverse | .[0:5] | .[]
