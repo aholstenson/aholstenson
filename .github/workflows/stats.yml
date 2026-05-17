@@ -8,13 +8,84 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: Generate README.md
-      uses: teoxoy/profile-readme-stats@v1
-      with:
-        token: ${{ secrets.USER_TOKEN }}
+      env:
+        GH_TOKEN: ${{ secrets.USER_TOKEN }}
+      run: |
+        set -euo pipefail
+
+        USER=$(gh api user --jq .login)
+
+        # Lifetime commits: contributionsCollection is capped at one year,
+        # so sum every year from account creation to now.
+        CREATED=$(gh api graphql -f query='
+          query($u:String!){ user(login:$u){ createdAt } }
+        ' -F u="$USER" --jq '.data.user.createdAt')
+        START_YEAR=${CREATED:0:4}
+        END_YEAR=$(date -u +%Y)
+
+        COMMITS=0
+        for ((y=START_YEAR; y<=END_YEAR; y++)); do
+          C=$(gh api graphql -f query='
+            query($u:String!,$from:DateTime!,$to:DateTime!){
+              user(login:$u){
+                contributionsCollection(from:$from,to:$to){
+                  totalCommitContributions
+                  restrictedContributionsCount
+                }
+              }
+            }
+          ' -F u="$USER" -F from="${y}-01-01T00:00:00Z" -F to="${y}-12-31T23:59:59Z" \
+            --jq '.data.user.contributionsCollection
+                  | (.totalCommitContributions + .restrictedContributionsCount)')
+          COMMITS=$((COMMITS + C))
+        done
+
+        ISSUES=$(gh api graphql -f query='
+          query($u:String!){ user(login:$u){ issues { totalCount } } }
+        ' -F u="$USER" --jq '.data.user.issues.totalCount')
+
+        PULL_REQUESTS=$(gh api graphql -f query='
+          query($u:String!){ user(login:$u){ pullRequests { totalCount } } }
+        ' -F u="$USER" --jq '.data.user.pullRequests.totalCount')
+
+        # Repository count + total stars, paginated over owned non-fork public repos.
+        REPOSITORIES=0
+        STARS=0
+        CURSOR=null
+        while :; do
+          PAGE=$(gh api graphql -f query='
+            query($u:String!,$cursor:String){
+              user(login:$u){
+                repositories(ownerAffiliations:OWNER, isFork:false, privacy:PUBLIC,
+                             first:100, after:$cursor){
+                  totalCount
+                  pageInfo { hasNextPage endCursor }
+                  nodes { stargazerCount }
+                }
+              }
+            }
+          ' -F u="$USER" -F cursor="$CURSOR" --jq '.data.user.repositories')
+          REPOSITORIES=$(echo "$PAGE" | jq '.totalCount')
+          PAGE_STARS=$(echo "$PAGE" | jq '[.nodes[].stargazerCount] | add // 0')
+          STARS=$((STARS + PAGE_STARS))
+          [ "$(echo "$PAGE" | jq -r '.pageInfo.hasNextPage')" = "true" ] || break
+          CURSOR=$(echo "$PAGE" | jq -r '.pageInfo.endCursor')
+        done
+
+        echo "commits=$COMMITS issues=$ISSUES prs=$PULL_REQUESTS repos=$REPOSITORIES stars=$STARS"
+
+        cp TEMPLATE.md README.md
+        sed -i \
+          -e "s/{{ COMMITS }}/$COMMITS/g" \
+          -e "s/{{ ISSUES }}/$ISSUES/g" \
+          -e "s/{{ PULL_REQUESTS }}/$PULL_REQUESTS/g" \
+          -e "s/{{ REPOSITORIES }}/$REPOSITORIES/g" \
+          -e "s/{{ STARS }}/$STARS/g" \
+          README.md
     - name: Update README.md
       run: |
         if [[ "$(git status --porcelain)" != "" ]]; then
