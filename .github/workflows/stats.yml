@@ -61,7 +61,9 @@ jobs:
             user(login:$u){
               contributionsCollection(from:$from,to:$to){
                 commitContributionsByRepository(maxRepositories:100){
-                  contributions { totalCount }
+                  contributions(first:1, orderBy:{field:OCCURRED_AT, direction:DESC}){
+                    nodes { occurredAt }
+                  }
                   repository { nameWithOwner url isPrivate isFork }
                 }
               }
@@ -71,9 +73,9 @@ jobs:
           --jq '[ .data.user.contributionsCollection.commitContributionsByRepository[]
                   | select(.repository.isPrivate == false and .repository.isFork == false)
                   | { n: .repository.nameWithOwner, url: .repository.url,
-                      c: .contributions.totalCount } ]
-                | sort_by(-.c) | .[0:5] | .[]
-                | "[\(.n)](\(.url))"')
+                      t: .contributions.nodes[0].occurredAt } ]
+                | sort_by(.t) | reverse | .[0:5] | .[]
+                | "[\(.n | ltrimstr("'"$USER"'/"))](\(.url))"')
 
         # Join the links into an Oxford-style list (the surrounding sentence
         # lives in TEMPLATE.md). Empty when there was no recent activity.
