@@ -2,7 +2,7 @@
 
 I work with user-centered problem solving using technology. You'll find me in Malmö, Sweden.
 
-I enjoy building things and over the years on GitHub I've pushed 14112 commits, opened 46 issues and submitted 52 PRs. There's currently 31 repositories around here with 2130 stars.
+I enjoy building things and over the years on GitHub I've pushed 14118 commits, opened 46 issues and submitted 52 PRs. There's currently 31 repositories around here with 2130 stars.
 
 Lately I've been spending time in [LevelFourAB/exofind](https://github.com/LevelFourAB/exofind), [numeric-types](https://github.com/aholstenson/numeric-types), [kvarn](https://github.com/aholstenson/kvarn), [llms-go](https://github.com/aholstenson/llms-go) and [logseq-cli](https://github.com/aholstenson/logseq-cli).
 
