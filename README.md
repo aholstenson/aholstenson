@@ -2,7 +2,7 @@
 
 I work with user-centered problem solving using technology. You'll find me in Malmö, Sweden.
 
-I enjoy building things and over the years on GitHub I've pushed 15022 commits, opened 46 issues and submitted 52 PRs. There's currently 31 repositories around here with 2134 stars.
+I enjoy building things and over the years on GitHub I've pushed 15024 commits, opened 46 issues and submitted 52 PRs. There's currently 31 repositories around here with 2134 stars.
 
 Lately I've been spending time in [LevelFourAB/syncplane](https://github.com/LevelFourAB/syncplane), [llms-go](https://github.com/aholstenson/llms-go), [kvarn](https://github.com/aholstenson/kvarn), [LevelFourAB/exofind](https://github.com/LevelFourAB/exofind) and [sprout-go](https://github.com/aholstenson/sprout-go).
 
